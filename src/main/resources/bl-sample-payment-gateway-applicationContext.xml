@@ -35,7 +35,7 @@
 
     <bean class="org.broadleafcommerce.vendor.sample.service.payment.SamplePaymentGatewayType"/>
 
-    <!-- <bean id="blSamplePaymentGatewayHostedActionProcessor" class="org.broadleafcommerce.vendor.sample.web.processor.SamplePaymentGatewayHostedActionProcessor"/> -->
+    <bean id="blSamplePaymentGatewayHostedActionProcessor" class="org.broadleafcommerce.vendor.sample.web.processor.SamplePaymentGatewayHostedActionProcessor"/>
     <bean id="blSamplePaymentGatewayTRExtensionHandler" class="org.broadleafcommerce.vendor.sample.web.processor.SamplePaymentGatewayTRExtensionHandler"/>
     <bean id="blSamplePaymentGatewayFieldExtensionHandler" class="org.broadleafcommerce.vendor.sample.web.expression.SamplePaymentGatewayFieldExtensionHandler"/>
     

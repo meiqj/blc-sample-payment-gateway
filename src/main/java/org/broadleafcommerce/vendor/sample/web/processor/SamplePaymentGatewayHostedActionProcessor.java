@@ -24,15 +24,16 @@ import org.broadleafcommerce.common.payment.dto.PaymentRequestDTO;
 import org.broadleafcommerce.common.payment.dto.PaymentResponseDTO;
 import org.broadleafcommerce.common.payment.service.PaymentGatewayHostedService;
 import org.broadleafcommerce.common.vendor.service.exception.PaymentException;
+import org.broadleafcommerce.common.web.dialect.AbstractBroadleafAttributeModifierProcessor;
+import org.broadleafcommerce.common.web.domain.BroadleafAttributeModifier;
+import org.broadleafcommerce.common.web.domain.BroadleafThymeleafContext;
 import org.broadleafcommerce.vendor.sample.service.payment.SamplePaymentGatewayConstants;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
-import org.thymeleaf.processor.element.IElementTagStructureHandler;
-import org.thymeleaf.standard.expression.StandardExpressions;
-import org.thymeleaf.templatemode.TemplateMode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -54,7 +55,7 @@ import javax.annotation.Resource;
  * @author Elbert Bautista (elbertbautista)
  */
 @Component("blSamplePaymentGatewayHostedActionProcessor")
-public class SamplePaymentGatewayHostedActionProcessor extends AbstractAttributeTagProcessor {
+public class SamplePaymentGatewayHostedActionProcessor extends AbstractBroadleafAttributeModifierProcessor {
 
     @Resource(name = "blSamplePaymentGatewayHostedService")
     private PaymentGatewayHostedService paymentGatewayHostedService;
@@ -67,28 +68,19 @@ public class SamplePaymentGatewayHostedActionProcessor extends AbstractAttribute
     }
 
     protected SamplePaymentGatewayHostedActionProcessor(final String attributeName) {
-        super(TemplateMode.HTML, "blc", // prefix for all blc processors
-        null, // this is not tag specific
-        false, // the tag doesn't have to be prefixed with blc
-        attributeName, // the attribute whose value we need to consider
-        true, // attribute does need to be prefixed with blc
-        10000, // precendence
-        true); // we want to remove the attribute
+        super(attributeName, true, 10000);
     }
 
     @Override
-    protected void doProcess(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue, IElementTagStructureHandler structureHandler) {
-        PaymentRequestDTO requestDTO = (PaymentRequestDTO) StandardExpressions.getExpressionParser(context.getConfiguration())
-            .parseExpression(context, attributeValue)
-            .execute(context);
+    public BroadleafAttributeModifier getModifiedAttributes(String tagName, Map<String, String> tagAttributes, String attributeName, String attributeValue, BroadleafThymeleafContext context) {
+        PaymentRequestDTO requestDTO = (PaymentRequestDTO) context.parseExpression(attributeValue);
         String url = "";
-
+        Map<String, String> newAttributes = new HashMap<>();
+        List<String> removedAttributes = new ArrayList<>();
         if (requestDTO != null) {
-            if (tag.getAttributeValue("complete_checkout") != null) {
-                Boolean completeCheckout = (Boolean) StandardExpressions.getExpressionParser(context.getConfiguration())
-                    .parseExpression(context, tag.getAttributeValue("complete_checkout"))
-                    .execute(context);
-                structureHandler.removeAttribute("complete_checkout");
+            if (tagAttributes.get("complete_checkout") != null) {
+                Boolean completeCheckout = (Boolean) context.parseExpression(tagAttributes.get("complete_checkout"));
+                removedAttributes.add("complete_checkout");
                 requestDTO.completeCheckoutOnCallback(completeCheckout);
             }
 
@@ -99,6 +91,7 @@ public class SamplePaymentGatewayHostedActionProcessor extends AbstractAttribute
                 throw new RuntimeException("Unable to Create Sample Payment Gateway Hosted Link", e);
             }
         }
-        structureHandler.setAttribute("action", url);
+        newAttributes.put("action", url);
+        return new BroadleafAttributeModifier(newAttributes, removedAttributes);
     }
 }
