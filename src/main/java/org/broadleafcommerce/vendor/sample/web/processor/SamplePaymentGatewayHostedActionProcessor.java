@@ -60,17 +60,16 @@ public class SamplePaymentGatewayHostedActionProcessor extends AbstractBroadleaf
     @Resource(name = "blSamplePaymentGatewayHostedService")
     private PaymentGatewayHostedService paymentGatewayHostedService;
 
-    /**
-     * Sets the name of this processor to be used in Thymeleaf template
-     */
-    public SamplePaymentGatewayHostedActionProcessor() {
-        this("sample_payment_hosted_action-size-link");
+    @Override
+    public String getName() {
+        return "sample_payment_hosted_action-size-link";
     }
-
-    protected SamplePaymentGatewayHostedActionProcessor(final String attributeName) {
-        super(attributeName, true, 10000);
+    
+    @Override
+    public int getPrecedence() {
+        return 10000;
     }
-
+    
     @Override
     public BroadleafAttributeModifier getModifiedAttributes(String tagName, Map<String, String> tagAttributes, String attributeName, String attributeValue, BroadleafThymeleafContext context) {
         PaymentRequestDTO requestDTO = (PaymentRequestDTO) context.parseExpression(attributeValue);
