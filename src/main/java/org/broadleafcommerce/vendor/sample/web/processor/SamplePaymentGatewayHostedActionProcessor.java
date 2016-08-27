@@ -26,7 +26,7 @@ import org.broadleafcommerce.common.payment.service.PaymentGatewayHostedService;
 import org.broadleafcommerce.common.vendor.service.exception.PaymentException;
 import org.broadleafcommerce.common.web.dialect.AbstractBroadleafAttributeModifierProcessor;
 import org.broadleafcommerce.common.web.domain.BroadleafAttributeModifier;
-import org.broadleafcommerce.common.web.domain.BroadleafThymeleafContext;
+import org.broadleafcommerce.common.web.domain.BroadleafTemplateContext;
 import org.broadleafcommerce.vendor.sample.service.payment.SamplePaymentGatewayConstants;
 import org.springframework.stereotype.Component;
 
@@ -71,7 +71,7 @@ public class SamplePaymentGatewayHostedActionProcessor extends AbstractBroadleaf
     }
     
     @Override
-    public BroadleafAttributeModifier getModifiedAttributes(String tagName, Map<String, String> tagAttributes, String attributeName, String attributeValue, BroadleafThymeleafContext context) {
+    public BroadleafAttributeModifier getModifiedAttributes(String tagName, Map<String, String> tagAttributes, String attributeName, String attributeValue, BroadleafTemplateContext context) {
         PaymentRequestDTO requestDTO = (PaymentRequestDTO) context.parseExpression(attributeValue);
         String url = "";
         Map<String, String> newAttributes = new HashMap<>();
